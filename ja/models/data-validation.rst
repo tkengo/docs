@@ -108,6 +108,7 @@ CakePHPにはたくさんのビルトインのバリデーションルールが�
   some of these built-in validation rules::
 
 ::
+
     <?php
     class User extends AppModel {
         public $validate = array(
@@ -174,33 +175,55 @@ emailフィールドは同じくメールアドレス形式であること、\
   single rule per field, and multiple rules per field.
 
 
-Simple Rules
+単純なルール
 ============
 
-As the name suggests, this is the simplest way to define a
-validation rule. The general syntax for defining rules this way
-is::
+これは一番単純なルールの定義方法です。以下のようにして定義します。
+
+..
+  As the name suggests, this is the simplest way to define a
+  validation rule. The general syntax for defining rules this way
+  is::
+
+::
 
     <?php
     public $validate = array('fieldName' => 'ruleName');
 
-Where, 'fieldName' is the name of the field the rule is defined
-for, and ‘ruleName’ is a pre-defined rule name, such as
-'alphaNumeric', 'email' or 'isUnique'.
+'fieldName'はルールを定義する対象のフィールド名、\
+'ruleName'は'alphaNumeric'や'email', 'isUnique'などのビルトインルールです。
 
-For example, to ensure that the user is giving a well formatted
-email address, you could use this rule::
+..
+  Where, 'fieldName' is the name of the field the rule is defined
+  for, and ‘ruleName’ is a pre-defined rule name, such as
+  'alphaNumeric', 'email' or 'isUnique'.
+
+ユーザーが正しい形式のメールアドレスをもっている必要があるなら、\
+以下のようにルールを定義します。
+
+..
+  For example, to ensure that the user is giving a well formatted
+  email address, you could use this rule::
+
+::
 
     <?php
     public $validate = array('user_email' => 'email');
 
 
-One Rule Per Field
+1フィールド1ルール
 ==================
 
-This definition technique allows for better control of how the
-validation rules work. But before we discuss that, let’s see the
-general usage pattern adding a rule for a single field::
+これは単純な配列よりも詳細にバリデーションルールを定義できます。\
+説明をする前に、フィールドにルールを追加する一般的なやり方を\
+見てみましょう。
+
+..
+  This definition technique allows for better control of how the
+  validation rules work. But before we discuss that, let’s see the
+  general usage pattern adding a rule for a single field::
+
+::
 
     <?php
     public $validate = array(
@@ -213,27 +236,49 @@ general usage pattern adding a rule for a single field::
         )
     );
 
-The 'rule' key is required. If you only set 'required' => true, the
-form validation will not function correctly. This is because
-'required' is not actually a rule.
+'rule'キーは必須です。\
+'required'はルールではないので、'required' => true だけ指定しても、\
+バリデーションは機能しません。
 
-As you can see here, each field (only one field shown above) is
-associated with an array that contains five keys: ‘rule’,
-‘required’, ‘allowEmpty’, ‘on’ and ‘message’. Let’s have a closer
-look at these keys.
+..
+  The 'rule' key is required. If you only set 'required' => true, the
+  form validation will not function correctly. This is because
+  'required' is not actually a rule.
+
+これを見てわかるように、各フィールドは(フィールドが1つしかない場合でも)\
+'rule', 'required', 'allowEmpty', 'on', 'message'という5つのキーを含む配列が\
+指定されています。\
+これらのキーの詳細をみていきましょう。
+
+..
+  As you can see here, each field (only one field shown above) is
+  associated with an array that contains five keys: ‘rule’,
+  ‘required’, ‘allowEmpty’, ‘on’ and ‘message’. Let’s have a closer
+  look at these keys.
 
 rule
 ----
 
-The 'rule' key defines the validation method and takes either a
-single value or an array. The specified 'rule' may be the name of a
-method in your model, a method of the core Validation class, or a
-regular expression. For more information on the rules available by
-default, see
-:ref:`core-validation-rules`.
+'rule'キーはバリデーションのメソッドを定義します。単一の値もしくは配列を指定します。\
+'rule'には、モデルの中にあるメソッド、またはコアのバリデーションクラスにあるメソッド、\
+もしくは正規表現を指定します。\
+ルールの詳細については :ref:`core-validation-rules` も参照してください。
 
-If the rule does not require any parameters, 'rule' can be a single
-value e.g.::
+..
+  The 'rule' key defines the validation method and takes either a
+  single value or an array. The specified 'rule' may be the name of a
+  method in your model, a method of the core Validation class, or a
+  regular expression. For more information on the rules available by
+  default, see
+  :ref:`core-validation-rules`.
+
+ルールにパラメータが不要であれば、'rule'は単一の値をとります。
+
+..
+  If the rule does not require any parameters, 'rule' can be a single
+  value e.g.::
+
+::
 
     <?php
     public $validate = array(
@@ -242,8 +287,14 @@ value e.g.::
         )
     );
 
-If the rule requires some parameters (like the max, min or range),
-'rule' should be an array::
+ルールにパラメータが必要であれば(たとえば最大値とか最小値、範囲など)、\
+'rule'は配列となります。
+
+..
+  If the rule requires some parameters (like the max, min or range),
+  'rule' should be an array::
+
+::
 
     <?php
     public $validate = array(
@@ -252,17 +303,31 @@ If the rule requires some parameters (like the max, min or range),
         )
     );
 
-Remember, the 'rule' key is required for array-based rule
-definitions.
+このように'rule'キーは配列ベースのルール定義ができます。
+
+..
+  Remember, the 'rule' key is required for array-based rule
+  definitions.
 
 required
 --------
 
-This key accepts either a boolean, or ``create`` or ``update``.  Setting this
-key to ``true`` will make the field always required.  While setting it to
-``create`` or ``update`` will make the field required only for update or  create
-operations. If 'required' is evaluated to true, the field must be present in the
-data array.  For example, if the validation rule has been defined as follows::
+requiredキーにはbool値または ``create`` ``update`` のいずれかの値を指定します。\
+このキーに ``true`` を指定すると、そのフィールドを必須とすることができます。\
+``create`` または ``update`` を指定すると、データの新規作成や更新時に限って\
+そのフィールドを必須とすることができます。\
+'required'キーがtrueなら、dataの中に必ずそのフィールドのキーが\
+存在していないといけません。\
+たとえば、以下の様なバリデーションルールを定義していたとすると
+
+..
+  This key accepts either a boolean, or ``create`` or ``update``.  Setting this
+  key to ``true`` will make the field always required.  While setting it to
+  ``create`` or ``update`` will make the field required only for update or  create
+  operations. If 'required' is evaluated to true, the field must be present in the
+  data array.  For example, if the validation rule has been defined as follows::
+
+::
 
     <?php
     public $validate = array(
@@ -272,56 +337,105 @@ data array.  For example, if the validation rule has been defined as follows::
         )
     );
 
-The data sent to the model’s save() method must contain data for
-the login field. If it doesn’t, validation will fail. The default
-value for this key is boolean false.
+モデルのsave()メソッドに渡されるデータは、loginというキーを\
+含んでいる必要があります。含まれていなければバリデーションに失敗します。\
+requiredキーのデフォルト値はfalseです。
 
-``required => true`` does not mean the same as the validation rule
-``notEmpty()``. ``required => true`` indicates that the array *key*
-must be present - it does not mean it must have a value. Therefore
-validation will fail if the field is not present in the dataset,
-but may (depending on the rule) succeed if the value submitted is
-empty ('').
+..
+  The data sent to the model’s save() method must contain data for
+  the login field. If it doesn’t, validation will fail. The default
+  value for this key is boolean false.
+
+``required => true`` とすることと、ルールに ``notEmpty()`` を指定することは\
+意味が違います。 ``required => true`` は、配列に *キー* が\
+必ず含まれなければならなということです。\
+値が空ではない、ということではありません。\
+ですので、データの中にフィールドが含まれていなければバリデーションは失敗しますし、\
+値が空('')である場合は(ルールに何を指定しているかにもよりますが)成功します。
+
+..
+  ``required => true`` does not mean the same as the validation rule
+  ``notEmpty()``. ``required => true`` indicates that the array *key*
+  must be present - it does not mean it must have a value. Therefore
+  validation will fail if the field is not present in the dataset,
+  but may (depending on the rule) succeed if the value submitted is
+  empty ('').
 
 .. versionchanged:: 2.1
-    Support for ``create`` and ``update`` were added.
+    ``created`` と ``update`` のサポートが追加されました。
+
+..
+  .. versionchanged:: 2.1
+      Support for ``create`` and ``update`` were added.
 
 allowEmpty
 ----------
 
-If set to ``false``, the field value must be **nonempty**, where
-"nonempty" is defined as ``!empty($value) || is_numeric($value)``.
-The numeric check is so that CakePHP does the right thing when
-``$value`` is zero.
+このキーに ``false`` がセットされていれば、フィールドの値は\
+**空であってはなりません** 。これは ``!empty($value) || is_numeric($value)`` で\
+評価されます。CakePHPは ``$value`` がゼロの場合も空ではないと判断するので\
+数値のチェックが入っています。
 
-The difference between ``required`` and ``allowEmpty`` can be
-confusing. ``'required' => true`` means that you cannot save the
-model without the *key* for this field being present in
-``$this->data`` (the check is performed with ``isset``); whereas,
-``'allowEmpty' => false`` makes sure that the current field *value*
-is nonempty, as described above.
+..
+  If set to ``false``, the field value must be **nonempty**, where
+  "nonempty" is defined as ``!empty($value) || is_numeric($value)``.
+  The numeric check is so that CakePHP does the right thing when
+  ``$value`` is zero.
+
+``required`` と ``allowEmpty`` は似ているので混乱してしまいます。\
+``'required' => true`` は ``$this->data`` の中にフィールドの *キー* が\
+無いとデータを保存できません(チェックのために ``isset`` を使っています)。\
+``'allowEmpty' => false`` は上で説明したように、フィールドの *値* が\
+空かどうかをチェックします。
+
+..
+  The difference between ``required`` and ``allowEmpty`` can be
+  confusing. ``'required' => true`` means that you cannot save the
+  model without the *key* for this field being present in
+  ``$this->data`` (the check is performed with ``isset``); whereas,
+  ``'allowEmpty' => false`` makes sure that the current field *value*
+  is nonempty, as described above.
 
 on
 --
 
-The 'on' key can be set to either one of the following values:
-'update' or 'create'. This provides a mechanism that allows a
-certain rule to be applied either during the creation of a new
-record, or during update of a record.
+'on'キーには'update'もしくは'create'を指定できます。\
+これは、既存のレコードを更新する時もしくは新しいレコードを作る時だけに\
+ルールを適用させるための機能です。
 
-If a rule has defined 'on' => 'create', the rule will only be
-enforced during the creation of a new record. Likewise, if it is
-defined as 'on' => 'update', it will only be enforced during the
-updating of a record.
+..
+  The 'on' key can be set to either one of the following values:
+  'update' or 'create'. This provides a mechanism that allows a
+  certain rule to be applied either during the creation of a new
+  record, or during update of a record.
 
-The default value for 'on' is null. When 'on' is null, the rule
-will be enforced during both creation and update.
+'on' => 'create'と定義してあれば、そのルールは新しいレコードが作られる時だけ\
+適用されます。同様に'on' => 'update'と定義してあれば、そのルールは\
+既存のレコードを更新するときだけ適用されます。
+
+..
+  If a rule has defined 'on' => 'create', the rule will only be
+  enforced during the creation of a new record. Likewise, if it is
+  defined as 'on' => 'update', it will only be enforced during the
+  updating of a record.
+
+'on'のデフォルト値はnullです。'on'がnullであれば、そのルールは\
+新規作成と更新の時の両方に適用されます。
+
+..
+  The default value for 'on' is null. When 'on' is null, the rule
+  will be enforced during both creation and update.
 
 message
 -------
 
-The message key allows you to define a custom validation error
-message for the rule::
+このキーはバリデーションエラーのメッセージをカスタムできます。
+
+..
+  The message key allows you to define a custom validation error
+  message for the rule::
+
+::
 
     <?php
     public $validate = array(
@@ -331,17 +445,28 @@ message for the rule::
         )
     );
 
-Multiple Rules per Field
-========================
+1フィールド複数ルール
+=====================
 
-The technique outlined above gives us much more flexibility than
-simple rules assignment, but there’s an extra step we can take in
-order to gain more fine-grained control of data validation. The
-next technique we’ll outline allows us to assign multiple
-validation rules per model field.
+これは前に説明した単純なルールの割り当てよりも、より柔軟にルールを設定できます。\
+より細かくデータバリデーションを定義するために追加のステップが必要です。\
+1つのフィールドに複数のバリデーションルールを割り当てる方法を説明しています。
 
-If you would like to assign multiple validation rules to a single
-field, this is basically how it should look::
+..
+  The technique outlined above gives us much more flexibility than
+  simple rules assignment, but there’s an extra step we can take in
+  order to gain more fine-grained control of data validation. The
+  next technique we’ll outline allows us to assign multiple
+  validation rules per model field.
+
+1つのフィールドに複数のバリデーションを割り当てる場合は、\
+基本的には以下の様に定義します。
+
+..
+  If you would like to assign multiple validation rules to a single
+  field, this is basically how it should look::
+
+::
 
     <?php
     public $validate = array(
@@ -357,13 +482,24 @@ field, this is basically how it should look::
         )
     );
 
-As you can see, this is quite similar to what we did in the
-previous section. There, for each field we had only one array of
-validation parameters. In this case, each ‘fieldName’ consists of
-an array of rule indices. Each 'ruleName' contains a separate array
-of validation parameters.
+見てわかるように、前のセクションでやったのとほとんど同じです。\
+前に示した例では各フィールドは1つだけバリデーションの配列を定義していました。\
+このケースでは、'fieldName'は複数のルールで構成されています。\
+それぞれの'ruleName'にはバリデーションパラメータが定義されています。
 
-This is better explained with a practical example::
+..
+  As you can see, this is quite similar to what we did in the
+  previous section. There, for each field we had only one array of
+  validation parameters. In this case, each ‘fieldName’ consists of
+  an array of rule indices. Each 'ruleName' contains a separate array
+  of validation parameters.
+
+以下が良い例です。
+
+..
+  This is better explained with a practical example::
+
+::
 
     <?php
     public $validate = array(
@@ -379,24 +515,46 @@ This is better explained with a practical example::
         )
     );
 
-The above example defines two rules for the login field:
-loginRule-1 and loginRule-2. As you can see, each rule is
-identified with an arbitrary name.
+この例ではloginフィールドに対してloginRule-1とloginRule-2という\
+2つのルールを定義しています。\
+このようにそれぞれのルールには任意の名前をつけて判別できます。
 
-When using multiple rules per field the 'required' and 'allowEmpty'
-keys need to be used only once in the first rule.
+..
+  The above example defines two rules for the login field:
+  loginRule-1 and loginRule-2. As you can see, each rule is
+  identified with an arbitrary name.
+
+1つのフィールドに対して複数のルールをつける時、\
+'required'と'allowEmpty'のキーは、最初のルールに1度だけ指定すれば\
+それで問題ありません。
+
+..
+  When using multiple rules per field the 'required' and 'allowEmpty'
+  keys need to be used only once in the first rule.
 
 last
--------
+----
 
-In case of multiple rules per field by default if a particular rule
-fails error message for that rule is returned and the following rules
-for that field are not processed. If you want validation to continue
-in spite of a rule failing set key ``last`` to ``false`` for that rule.
+1フィールド複数ルールの場合、あるルールでバリデーションが失敗した時には、\
+そのルールのエラーメッセージが返り、残りのルールのバリデーションは飛ばされます。\
+残りのバリデーションも実行したければ、そのルールの ``last`` キーに ``false`` を\
+指定します。
 
-In the following example even if "rule1" fails "rule2" will be processed
-and error messages for both failing rules will be returned if "rule2" also
-fails::
+..
+  In case of multiple rules per field by default if a particular rule
+  fails error message for that rule is returned and the following rules
+  for that field are not processed. If you want validation to continue
+  in spite of a rule failing set key ``last`` to ``false`` for that rule.
+
+下記サンプルでは、"rule1"がバリデーションに失敗しても"rule2"のバリデーションは\
+実行され、"rule2"のバリデーションも失敗した場合は両方のエラーメッセージが返ってきます。
+
+..
+  In the following example even if "rule1" fails "rule2" will be processed
+  and error messages for both failing rules will be returned if "rule2" also
+  fails::
+
+::
 
     <?php
     public $validate = array(
@@ -413,8 +571,13 @@ fails::
         )
     );
 
-When specifying validation rules in this array form its possible to avoid
-providing the ``message`` key. Consider this example::
+以下のようにして、配列のルールから ``message`` キーを省くことができます。\
+
+..
+  When specifying validation rules in this array form its possible to avoid
+  providing the ``message`` key. Consider this example::
+
+::
 
     <?php
     public $validate = array(
@@ -425,25 +588,40 @@ providing the ``message`` key. Consider this example::
         )
     );
 
-If the ``alphaNumeric`` rules fails the array key for this rule
-'Only alphabets and numbers allowed' will be returned as error message since
-the ``message`` key is not set.
+この場合、 ``alphaNumeric`` がバリデーションに失敗すれば、そのキーである\
+'Only alphabets and numbers allowed'がエラーメッセージとして返ります。
+
+..
+  If the ``alphaNumeric`` rules fails the array key for this rule
+  'Only alphabets and numbers allowed' will be returned as error message since
+  the ``message`` key is not set.
 
 
-Custom Validation Rules
-=======================
+カスタムバリデーションルール
+============================
 
-If you haven’t found what you need thus far, you can always create
-your own validation rules. There are two ways you can do this: by
-defining custom regular expressions, or by creating custom
-validation methods.
+自分が使いたいバリデーションルールがなければ、\
+正規表現もしくはカスタムバリデーションメソッドを定義することで\
+独自のバリデーションルールを使うことができます。
 
-Custom Regular Expression Validation
-------------------------------------
+..
+  If you haven’t found what you need thus far, you can always create
+  your own validation rules. There are two ways you can do this: by
+  defining custom regular expressions, or by creating custom
+  validation methods.
 
-If the validation technique you need to use can be completed by
-using regular expression matching, you can define a custom
-expression as a field validation rule::
+正規表現によるバリデーション
+----------------------------
+
+バリデーションルールが正規表現で表せるのであれば、\
+フィールドのルールに正規表現を定義します。
+
+..
+  If the validation technique you need to use can be completed by
+  using regular expression matching, you can define a custom
+  expression as a field validation rule::
+
+::
 
     <?php
     public $validate = array(
@@ -453,20 +631,35 @@ expression as a field validation rule::
         )
     );
 
-The example above checks if the login contains only letters and
-integers, with a minimum of three characters.
+上記の例では、loginフィールドに最低でも3文字のアルファベットと\
+数値が含まれているかどうかをチェックします。
 
-The regular expression in the ``rule`` must be delimited by
-slashes. The optional trailing 'i' after the last slash means the
-reg-exp is case *i*\ nsensitive.
+..
+  The example above checks if the login contains only letters and
+  integers, with a minimum of three characters.
 
-Adding your own Validation Methods
-----------------------------------
+``rule`` の正規表現はスラッシュで区切って下さい。\
+最後のスラッシュに'i'をつければ、大文字と小文字を区別しなくなります。
 
-Sometimes checking data with regular expression patterns is not
-enough. For example, if you want to ensure that a promotional code
-can only be used 25 times, you need to add your own validation
-function, as shown below::
+..
+  The regular expression in the ``rule`` must be delimited by
+  slashes. The optional trailing 'i' after the last slash means the
+  reg-exp is case *i*\ nsensitive.
+
+独自のバリデーションメソッドを追加する
+--------------------------------------
+
+25回だけプロモーションコードを使うことができる、といったチェックは\
+正規表現だけではできません。こういう時は以下のようにして\
+独自にバリデーションメソッドを追加します。
+
+..
+  Sometimes checking data with regular expression patterns is not
+  enough. For example, if you want to ensure that a promotional code
+  can only be used 25 times, you need to add your own validation
+  function, as shown below::
+
+::
 
     <?php
     class User extends AppModel {
@@ -479,8 +672,8 @@ function, as shown below::
         );
 
         public function limitDuplicates($check, $limit) {
-            // $check will have value: array('promotion_code' => 'some-value')
-            // $limit will have value: 25
+            // $checkにはarray('promotion_code' => 'some-value')が入っています
+            // $limitには25が入っています
             $existing_promo_count = $this->find('count', array(
                 'conditions' => $check,
                 'recursive' => -1
@@ -489,29 +682,53 @@ function, as shown below::
         }
     }
 
-The current field to be validated is passed into the function as
-first parameter as an associated array with field name as key and
-posted data as value.
+メソッドの第一引数にはフィールド名をキーとして\
+POSTされたデータを値とする連想配列として渡されます。
 
-If you want to pass extra parameters to your validation function,
-add elements onto the ‘rule’ array, and handle them as extra params
-(after the main ``$check`` param) in your function.
+..
+  The current field to be validated is passed into the function as
+  first parameter as an associated array with field name as key and
+  posted data as value.
 
-Your validation function can be in the model (as in the example
-above), or in a behavior that the model implements. This includes
-mapped methods.
+'rule'を配列にして追加したパラメータを指定すれば、それをバリデーションメソッドに\
+渡すことができて(``$check`` パラメータの後の引数で受け取ります)、\
+メソッドの中で参照することができます。
 
-Model/behavior methods are checked first, before looking for a
-method on the ``Validation`` class. This means that you can
-override existing validation methods (such as ``alphaNumeric()``)
-at an application level (by adding the method to ``AppModel``), or
-at model level.
+..
+  If you want to pass extra parameters to your validation function,
+  add elements onto the ‘rule’ array, and handle them as extra params
+  (after the main ``$check`` param) in your function.
 
-When writing a validation rule which can be used by multiple
-fields, take care to extract the field value from the $check array.
-The $check array is passed with the form field name as its key and
-the field value as its value. The full record being validated is
-stored in $this->data member variable::
+バリデーションメソッドは(上記の例で示したように)モデルの中、\
+もしくはビヘイビアの中に定義します。\
+
+..
+  Your validation function can be in the model (as in the example
+  above), or in a behavior that the model implements. This includes
+  mapped methods.
+
+``Validation`` クラスでバリデーションメソッドを探すより前に、最初に\
+モデルまたはビヘイビアからメソッドを探そうとします。\
+これによって既存のバリデーションルール(例えば ``alphaNumeric()`` など)を\
+アプリケーションレベル(``AppModel`` にメソッドを追加する)もしくはモデルレベルで\
+上書きできます。
+
+..
+  Model/behavior methods are checked first, before looking for a
+  method on the ``Validation`` class. This means that you can
+  override existing validation methods (such as ``alphaNumeric()``)
+  at an application level (by adding the method to ``AppModel``), or
+  at model level.
+
+複数フィールドで使われるバリデーションルールを書く場合は
+$checkはフィールドの値を展開します。
+
+..
+  When writing a validation rule which can be used by multiple
+  fields, take care to extract the field value from the $check array.
+  The $check array is passed with the form field name as its key and
+  the field value as its value. The full record being validated is
+  stored in $this->data member variable::
 
     <?php
     class Post extends AppModel {

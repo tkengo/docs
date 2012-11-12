@@ -720,8 +720,10 @@ POSTされたデータを値とする連想配列として渡されます。
   at an application level (by adding the method to ``AppModel``), or
   at model level.
 
-複数フィールドで使われるバリデーションルールを書く場合は
-$checkはフィールドの値を展開します。
+複数フィールドで使われるバリデーションルールでは、$checkから\
+フィールドの値を取り出して下さい。\
+$checkにはフォームのフィールド名がキーで、フォームの入力値の値となる\
+配列が渡されます。それ以外のフォームデータは$this->dataに入っています。
 
 ..
   When writing a validation rule which can be used by multiple
@@ -729,6 +731,8 @@ $checkはフィールドの値を展開します。
   The $check array is passed with the form field name as its key and
   the field value as its value. The full record being validated is
   stored in $this->data member variable::
+
+::
 
     <?php
     class Post extends AppModel {
@@ -741,8 +745,8 @@ $checkはフィールドの値を展開します。
         );
 
         public function alphaNumericDashUnderscore($check) {
-            // $data array is passed using the form field name as the key
-            // have to extract the value to make the function generic
+            // $data配列はフィールド名をキーとして値を渡されます。
+            // このバリデーションメソッドを汎用的にするには以下のようにして配列から値を取り出します。
             $value = array_values($check);
             $value = $value[0];
 
@@ -752,46 +756,78 @@ $checkはフィールドの値を展開します。
 
 .. note::
 
+    独自のバリデーションメソッドは ``public`` にしてください。\
+    ``protected`` と ``private`` なバリデーションメソッドはサポートしていません。
+..
     Your own validation methods must have ``public`` visibility. Validation
     methods that are ``protected`` and ``private`` are not supported.
 
-The method should return ``true`` if the value is valid. If the validation
-failed, return ``false``. The other valid return value are strings which will
-be shown as the error message. Returning a string means the validation failed.
-The string will overwrite the message set in the $validate array and be shown
-in the view's form as the reason why the field was not valid.
+バリデーションに成功すれば ``true`` を、バリデーションに失敗すれば ``false`` を返します。\
+また、エラーメッセージとして文字列を返すこともできます。\
+文字列を返した場合はバリデーションは失敗したとみなされます。\
+$validat配列で設定したmessageキーはここで返した文字列で上書きされ、\
+フォームのエラーメッセージとして表示されます。
+
+..
+  The method should return ``true`` if the value is valid. If the validation
+  failed, return ``false``. The other valid return value are strings which will
+  be shown as the error message. Returning a string means the validation failed.
+  The string will overwrite the message set in the $validate array and be shown
+  in the view's form as the reason why the field was not valid.
+
+バリデーションルールを動的に変更する
+====================================
+
+各モデルで静的なバリデーションルールを定義するのであれば、 ``$validate`` に\
+ルールを定義すれば事足ります。ただ、ルールを動的に追加、変更、削除したい\
+こともあるでしょう。
+
+..
+  Using ``$validate`` property to declare validation rules is a good ways of defining
+  statically rules for each model. Nevertheless there are cases when you want to
+  dynamically add, change or remove validation rules from the predefined set.
+
+すべてのバリデーションルールは ``ModelValidator`` オブジェクトの中にあり、\
+モデルでは各フィールドのルールセットを保持しています。\
+バリデーションルールを動的に操作したい場合、新しいバリデーションメソッドを
+このオブジェクトに対して追加することで新しいバリデーションルールを追加できます。
+
+..
+  All validation rules are stored in a ``ModelValidator`` object, which holds
+  every rule set for each field in your model. Defining new validation rules is as
+  easy as telling this object to store new validation methods for the fields you
+  want to.
 
 
-Dynamically change validation rules
-===================================
-
-Using ``$validate`` property to declare validation rules is a good ways of defining
-statically rules for each model. Nevertheless there are cases when you want to
-dynamically add, change or remove validation rules from the predefined set.
-
-All validation rules are stored in a ``ModelValidator`` object, which holds
-every rule set for each field in your model. Defining new validation rules is as
-easy as telling this object to store new validation methods for the fields you
-want to.
-
-
-Adding new validation rules
----------------------------
+新しいバリデーションルールを追加する
+------------------------------------
 
 .. versionadded:: 2.2
 
-The ``ModelValidator`` objects allows several ways for adding new fields to the
-set. The first one is using the ``add`` method::
+``ModelValidator`` オブジェクトを使ってフィールドに対して新しくルールを追加する方法は\
+いくつかあります。まず1つ目は ``add`` メソッドを使うことです。
+
+..
+  The ``ModelValidator`` objects allows several ways for adding new fields to the
+  set. The first one is using the ``add`` method::
+
+::
 
     <?php
-    // Inside a model class
+    // モデルクラスの中
     $this->validator()->add('password', 'required', array(
         'rule' => 'notEmpty',
         'required' => 'create'
     ));
 
-This will add a single rule to the `password` field in the model. You can chain
-multiple calls to add to create as many rules as you like::
+この例ではモデルの `password` フィールドに対してルールを1つ追加しています。\
+次のようにしてaddメソッドの呼び出しをチェインして複数のルールを追加することもできます。
+
+..
+  This will add a single rule to the `password` field in the model. You can chain
+  multiple calls to add to create as many rules as you like::
+
+::
 
     <?php
     // Inside a model class
@@ -805,7 +841,12 @@ multiple calls to add to create as many rules as you like::
             'message' => 'Password should be at least 8 chars long'
         ));
 
-It is also possible to add multiple rules at once for a single field::
+1つのフィールドに対して複数のルールを一度に追加することもできます。
+
+..
+  It is also possible to add multiple rules at once for a single field::
+
+::
 
     <?php
     $this->validator()->add('password', array(
@@ -819,8 +860,14 @@ It is also possible to add multiple rules at once for a single field::
         )
     ));
 
-Alternatively, you can use the validator object to set rules directly to fields
-using the array interface::
+addメソッドを使う代わりに、validatorオブジェクトに直接配列でルールをセットすることも\
+できます。
+
+..
+  Alternatively, you can use the validator object to set rules directly to fields
+  using the array interface::
+
+::
 
     <?php
     $validator = $this->validator();
@@ -834,24 +881,35 @@ using the array interface::
         )
     );
 
-Modifying current validation rules
-----------------------------------
+既存のバリデーションルールを変更する
+------------------------------------
 
 .. versionadded:: 2.2
 
-Modifying current validation rules is also possible using the validator object,
-there are several ways in which you can alter current rules, append methods to a
-field or completely remove a rule from a field rule set::
+既存のルールの変更も同じようにvalidatorオブジェクトを使って、\
+フィールドに対してルールを追加したり、ルールを削除したりできます。
+
+..
+  Modifying current validation rules is also possible using the validator object,
+  there are several ways in which you can alter current rules, append methods to a
+  field or completely remove a rule from a field rule set::
+
+::
 
     <?php
-    // In a model class
+    // モデルクラスの中
     $this->validator()->getField('password')->setRule('required', array(
         'rule' => 'required',
         'required' => true
     ));
 
-You can also completely replace all the rules for a field using a similar
-method::
+似たようなメソッドでフィールドのルールを置き換えることもできます。
+
+..
+  You can also completely replace all the rules for a field using a similar
+  method::
+
+::
 
     <?php
     // In a model class
@@ -860,19 +918,35 @@ method::
         'otherRule' => array(...)
     ));
 
-If you wish to just modify a single property in a rule you can set properties
-directly into the ``CakeValidationRule`` object::
+ルール中のどれか1つのプロパティを変更したい場合は、\
+``CakeValidationRule`` オブジェクトに対して直接値をセットします。
+
+..
+  If you wish to just modify a single property in a rule you can set properties
+  directly into the ``CakeValidationRule`` object::
+
+::
 
     <?php
-    // In a model class
+    // モデルクラスの中
     $this->validator()->getField('password')
         ->getRule('required')->message = 'This field cannot be left blank';
 
-Properties in any ``CakeValidationRule`` are named as the valid array keys you
-can use for defining such rules using the ``$validate`` property in the model.
+``CakeValidationRule`` のプロパティ名は、モデルの ``$validate`` 配列に指定する\
+キーと同じです。
 
-As with adding new rule to the set, it is also possible to modify existing rules
-using the array interface::
+..
+  Properties in any ``CakeValidationRule`` are named as the valid array keys you
+  can use for defining such rules using the ``$validate`` property in the model.
+
+新しいルールを追加する場合と同じように、既存のルールを変更する場合も\
+配列で指定することができます。
+
+..
+  As with adding new rule to the set, it is also possible to modify existing rules
+  using the array interface::
+
+::
 
     <?php
     $validator = $this->validator();
@@ -885,47 +959,68 @@ using the array interface::
     $validator['username']['unique']->message = 'Name already taken';
 
 
-Removing rules from the set
----------------------------
+バリデーションルールを削除する
+------------------------------
 
 .. versionadded:: 2.2
 
-It is possible to both completely remove all rules for a field and to delete a
-single rule in a field's rule set::
+フィールドに対するルールを全て消したり、特定の1つだけ消したりすることもできます。
+
+..
+  It is possible to both completely remove all rules for a field and to delete a
+  single rule in a field's rule set::
+
+::
 
     <?php
-    // Completely remove all rules for a field
+    // フィールドのルールを全て削除する
     $this->validator()->remove('username');
 
-    // Remove 'required' rule from password
+    // passwordフィールドの'required'ルールを削除する
     $this->validator()->remove('password', 'required');
 
-Optionally, you can use the array interface to delete rules from the set::
+また、配列を使ってルールを削除することもできます。
+
+..
+  Optionally, you can use the array interface to delete rules from the set::
+
+::
 
     <?php
     $validator = $this->validator();
-    // Completely remove all rules for a field
+    // フィールドのルールを全て削除する
     unset($validator['username']);
 
-    // Remove 'required' rule from password
+    // passwordフィールドの'required'ルールを削除する
     unset($validator['password']['required']);
 
 .. _core-validation-rules:
 
-Core Validation Rules
-=====================
+コアバリデーションルール
+========================
 
 .. php:class:: Validation
 
-The Validation class in CakePHP contains many validation rules that
-can make model data validation much easier. This class contains
-many oft-used validation techniques you won’t need to write on your
-own. Below, you'll find a complete list of all the rules, along
-with usage examples.
+CakePHPのValidationクラスには、よく使われるたくさんのバリデーションルールが\
+含まれているので、モデルのデータバリデーションが簡単にできます。\
+バリデーションルールを自分で書く必要はありません。\
+ここからは、サンプルコードを用いながらすべてのルールについて詳細を見ていきたいと思います。
+
+..
+  The Validation class in CakePHP contains many validation rules that
+  can make model data validation much easier. This class contains
+  many oft-used validation techniques you won’t need to write on your
+  own. Below, you'll find a complete list of all the rules, along
+  with usage examples.
 
 .. php:staticmethod:: alphaNumeric(mixed $check)
 
+    フィールドの値はアルファベットと数値のみでなければなりません。
+
+..
     The data for the field must only contain letters and numbers.::
+
+::
 
         <?php
         public $validate = array(
@@ -937,9 +1032,15 @@ with usage examples.
 
 .. php:staticmethod:: between(string $check, integer $min, integer $max)
 
+    フィールドの値の長さが指定された値の範囲内でなければなりません。\
+    パラメータとして最大値と最小値を指定してください。
+
+..
     The length of the data for the field must fall within the specified
     numeric range. Both minimum and maximum values must be supplied.
     Uses = not.::
+
+::
 
         <?php
         public $validate = array(
@@ -949,6 +1050,11 @@ with usage examples.
             )
         );
 
+    データの長さは"データを文字列として表した時のバイト数"で計算されます。\
+    ASCII以外の文字を扱っている場合、文字数よりもバイト数が大きくなることがあるので\
+    注意してください。
+
+..
     The length of data is "the number of bytes in the string
     representation of the data". Be careful that it may be larger than
     the number of characters when handling non-ASCII characters.
@@ -956,9 +1062,15 @@ with usage examples.
 
 .. php:staticmethod:: blank(mixed $check)
 
+    ホワイトスペースのみ、または空白かどうかをチェックします。\
+    ホワイトスペースは、スペース、タブ、改行です。
+
+..
     This rule is used to make sure that the field is left blank or only
     white space characters are present in its value. White space
     characters include space, tab, carriage return, and newline.::
+
+::
 
         <?php
         public $validate = array(
@@ -971,8 +1083,15 @@ with usage examples.
 
 .. php:staticmethod:: boolean(string $check)
 
+    フィールドの値はブール値でなければなりません。\
+    trueまたはfalse、もしくは整数の0または1、文字列の'0'または'1'であれば\
+    バリデーションが通ります。
+
+..
     The data for the field must be a boolean value. Valid values are
     true or false, integers 0 or 1 or strings '0' or '1'.::
+
+::
 
         <?php
         public $validate = array(
@@ -985,9 +1104,16 @@ with usage examples.
 
 .. php:staticmethod:: cc(mixed $check, mixed $type = 'fast', boolean $deep = false, string $regex = null)
 
+    有効なクレジットカード番号かどうかをチェックします。\
+    'type', 'deep', 'regex'の3つのパラメータが必要です。
+
+..
     This rule is used to check whether the data is a valid credit card
     number. It takes three parameters: ‘type’, ‘deep’ and ‘regex’.
 
+    'type'パラメータは'fast'や'all'、その他以下の値のいずれかを指定します。
+
+..
     The ‘type’ key can be assigned to the values of ‘fast’, ‘all’ or
     any of the following:
 
@@ -1005,6 +1131,11 @@ with usage examples.
     -  visa
     -  voyager
 
+    'type'に'fast'が指定された場合、主要なクレジットカードの採番方法をもとに\
+    バリデーションします。'type'に'all'が指定された場合は、全クレジットカード種別について\
+    チェックします。一致させたい種別を配列で指定することもできます。
+
+..
     If ‘type’ is set to ‘fast’, it validates the data against the major
     credit cards’ numbering formats. Setting ‘type’ to ‘all’ will check
     with all the credit card types. You can also set ‘type’ to an array

@@ -1141,14 +1141,25 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
     with all the credit card types. You can also set ‘type’ to an array
     of the types you wish to match.
 
+    'deep'にはブール値を指定します。trueを指定すれば、クレジットカード番号の\
+    Luhnアルゴリズムをチェックします。
+    (`http://en.wikipedia.org/wiki/Luhn\_algorithm <http://en.wikipedia.org/wiki/Luhn_algorithm>`_)
+    デフォルトはfalseです。
+
+..
     The ‘deep’ key should be set to a boolean value. If it is set to
     true, the validation will check the Luhn algorithm of the credit
     card
     (`http://en.wikipedia.org/wiki/Luhn\_algorithm <http://en.wikipedia.org/wiki/Luhn_algorithm>`_).
     It defaults to false.
 
+    'regex'はクレジットカード番号のバリデーションに使う正規表現を指定します。
+
+..
     The ‘regex’ key allows you to supply your own regular expression
     that will be used to validate the credit card number::
+
+::
 
         <?php
         public $validate = array(
@@ -1161,9 +1172,17 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: comparison(mixed $check1, string $operator = null, integer $check2 = null)
 
+    Comparisonは数値を比較するのに使います。\
+    'is greater(より大きい)', 'is less(より小さい)', 'greater or equal(以上)',
+    'less or equal(以下)', 'equal to(等しい)', 'not equal(等しくない)' といった\
+    比較をサポートしています。以下のようにして使います。
+
+..
     Comparison is used to compare numeric values. It supports “is
     greater”, “is less”, “greater or equal”, “less or equal”, “equal
     to”, and “not equal”. Some examples are shown below::
+
+::
 
         <?php
         public $validate = array(
@@ -1183,7 +1202,12 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: custom(mixed $check, string $regex = null)
 
+    カスタム正規表現が必要な際に使います。
+
+..
     Used when a custom regular expression is needed::
+
+::
 
         <?php
         public $validate = array(
@@ -1196,11 +1220,25 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: date(string $check, mixed $format = 'ymd', string $regex = null)
 
+    有効な日付かどうかをチェックします。\
+    $formatには、チェックしたい日付の形式を1つ指定します(配列でも渡せます)。\
+    指定できる形式は以下のうちのいずれかです。
+
+..
     This rule ensures that data is submitted in valid date formats. A
     single parameter (which can be an array) can be passed that will be
     used to check the format of the supplied date. The value of the
     parameter can be one of the following:
 
+    -  ‘dmy’ 例:27-12-2006 または 27-12-06 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+    -  ‘mdy’ 例:12-27-2006 または 12-27-06 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+    -  ‘ymd’ 例:2006-12-27 または 06-12-27 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+    -  ‘dMy’ 例:27 December 2006 または 27 Dec 2006
+    -  ‘Mdy’ 例:December 27, 2006 または Dec 27, 2006 (カンマは付けても付けなくてもOK)
+    -  ‘My’ 例:December 2006 または Dec 2006
+    -  ‘my’ 例:12/2006 または 12/06 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+
+..
     -  ‘dmy’ e.g. 27-12-2006 or 27-12-06 (separators can be a space,
        period, dash, forward slash)
     -  ‘mdy’ e.g. 12-27-2006 or 12-27-06 (separators can be a space,
@@ -1213,8 +1251,13 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
     -  ‘my’ e.g. 12/2006 or 12/06 (separators can be a space, period,
        dash, forward slash)
 
+    省略された場合はデフォルトで'ymd'が使われます。
+
+..
     If no keys are supplied, the default key that will be used is
     ‘ymd’::
+
+::
 
         <?php
         public $validate = array(
@@ -1225,6 +1268,11 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
             )
         );
 
+    ほとんどのデータストアは特定の日付形式になってないといけません。\
+    いろんな形式の日付を特定の形式に力技で変換するよりも、\
+    ユーザーに指定された形式で入力してもらいましょう。
+
+..
     While many data stores require a certain date format, you might
     consider doing the heavy lifting by accepting a wide-array of date
     formats and trying to convert them, rather than forcing users to
@@ -1234,11 +1282,25 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: datetime(array $check, mixed $dateFormat = 'ymd', string $regex = null)
 
+    有効な日時形式かどうかをチェックします。
+    $dateFormatには、チェックしたい日付の形式を1つ指定します(配列でも渡せます)。\
+    指定できる形式は以下のうちのいずれかです。
+
+..
     This rule ensures that the data is a valid datetime format. A
     parameter (which can be an array) can be passed to specify the format
     of the date. The value of the parameter can be one or more of the
     following:
 
+    -  ‘dmy’ 例:27-12-2006 または 27-12-06 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+    -  ‘mdy’ 例:12-27-2006 または 12-27-06 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+    -  ‘ymd’ 例:2006-12-27 または 06-12-27 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+    -  ‘dMy’ 例:27 December 2006 または 27 Dec 2006
+    -  ‘Mdy’ 例:December 27, 2006 または Dec 27, 2006 (カンマは付けても付けなくてもOK)
+    -  ‘My’ 例:December 2006 または Dec 2006
+    -  ‘my’ 例:12/2006 または 12/06 (日付の区切りはスペース、ピリオド、ダッシュ、スラッシュのいずれか)
+
+..
     -  ‘dmy’ e.g. 27-12-2006 or 27-12-06 (separators can be a space,
        period, dash, forward slash)
     -  ‘mdy’ e.g. 12-27-2006 or 12-27-06 (separators can be a space,
@@ -1251,8 +1313,13 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
     -  ‘my’ e.g. 12/2006 or 12/06 (separators can be a space, period,
        dash, forward slash)
 
+    省略された場合はデフォルトで'ymd'が使われます。
+
+..
     If no keys are supplied, the default key that will be used is
     ‘ymd’::
+
+::
 
         <?php
         public $validate = array(
@@ -1262,20 +1329,35 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
             )
         );
 
+    2つめのパラメータには正規表現を指定できます。\
+    このパラメータを指定すると、この正規表現だけ検証されます。
+
+..
     Also a second parameter can be passed to specify a custom regular
     expression. If this parameter is used, this will be the only
     validation that will occur.
 
+    datetime()はdate()とは違って、日付と時刻のバリデーションです。
+
+..
     Note that unlike date(), datetime() will validate a date and a time.
 
 
 .. php:staticmethod:: decimal(integer $check, integer $places = null, string $regex = null)
 
+    有効な小数かどうかをチェックします。\
+    $placesには小数点の桁を指定します。\
+    省略された場合、データはfloatとしてチェックされ、\
+    小数点以下がなければバリデーションに失敗します。
+
+..
     This rule ensures that the data is a valid decimal number. A
     parameter can be passed to specify the number of digits required
     after the decimal point. If no parameter is passed, the data will
     be validated as a scientific float, which will cause validation to
     fail if no digits are found after the decimal point::
+
+::
 
         <?php
         public $validate = array(
@@ -1287,9 +1369,16 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: email(string $check, boolean $deep = false, string $regex = null)
 
+    メールアドレスの形式かどうかをチェックします。\
+    2つめのパラメータにtrueを指定すると、メールアドレスのホスト部分が\
+    有効かどうかまでチェックしてくれます。
+
+..
     This checks whether the data is a valid email address. Passing a
     boolean true as the second parameter for this rule will also
     attempt to verify that the host for the address is valid::
+
+::
 
         <?php
         public $validate = array('email' => array('rule' => 'email'));
@@ -1304,6 +1393,9 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: equalTo(mixed $check, mixed $compareTo)
 
+    データが指定された値と等しいかどうかをチェックします。
+
+..
     This rule will ensure that the value is equal to, and of the same
     type as the given value.
 
@@ -1320,6 +1412,10 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: extension(mixed $check, array $extensions = array('gif', 'jpeg', 'png', 'jpg'))
 
+    ファイルの拡張子(.jpgや.pngなど)が指定されたものかどうかをチェックします。\
+    パラメータには配列を渡すことで複数の拡張子を指定できます。
+
+..
     This rule checks for valid file extensions like .jpg or .png. Allow
     multiple extensions by passing them in array form.
 
@@ -1335,11 +1431,20 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: fileSize($check, $operator = null, $size = null)
 
+    ファイルサイズのチェックをしてくれます。\
+    ``$operator`` に比較したい演算子を指定します。\
+    サポートする演算子については :php:func:`~Validation::comparison()` を参考にしてください。\
+    このバリデーションメソッドは ``$check`` に ``tmp_name`` というキーが含まれれば\
+    ``$_FILES`` からそのキーを読み込んでチェックを行います。
+
+..
     This rule allows you to check filesizes.  You can use ``$operator`` to
     decide the type of comparison you want to use.  All the operators supported
     by :php:func:`~Validation::comparison()` are supported here as well.  This
     method will automatically handle array values from ``$_FILES`` by reading
     from the ``tmp_name`` key if ``$check`` is an array an contains that key::
+
+::
 
         <?php
         public $validate = array(
@@ -1350,15 +1455,24 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
         );
 
     .. versionadded:: 2.3
+        このメソッドは2.3で追加されました。
+
+..
+    .. versionadded:: 2.3
         This method was added in 2.3
 
 .. php:staticmethod:: inList(string $check, array $list)
 
+    データが指定されたリストに含まれるかどうかをチェックします。\
+    パラメータに配列を指定して、その配列の中にデータと一致するものが入っていた場合に\
+    バリデーションが成功します。
+
+..
     This rule will ensure that the value is in a given set. It needs an
     array of values. The field is valid if the field's value matches
     one of the values in the given array.
 
-    Example::
+::
 
         <?php
         public $validate = array(
@@ -1373,6 +1487,10 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: ip(string $check, string $type = 'both')
 
+    IPv4またはIPv6の有効なアドレスかどうかをチェックします。\
+    $typeは、'both', 'IPv4', 'IPv6'のいずれかを指定します。デフォルトは'both'です。
+
+..
     This rule will ensure that a valid IPv4 or IPv6 address has been
     submitted. Accepts as option 'both' (default), 'IPv4' or 'IPv6'.
 
@@ -1389,6 +1507,9 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: isUnique()
 
+    フィールドの値が一意かどうかをチェックします。
+
+..
     The data for the field must be unique, it cannot be used by any
     other rows.
 
@@ -1404,6 +1525,10 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: luhn(string|array $check, boolean $deep = false)
 
+    Luhnアルゴリズム。いろいろなIDを検証するためのチェックサムのアルゴリズムです。
+    詳しくは http://en.wikipedia.org/wiki/Luhn_algorithm も参考にしてください。
+
+..
     The Luhn algorithm: A checksum formula to validate a variety of
     identification numbers. See http://en.wikipedia.org/wiki/Luhn_algorithm for
     more information.
@@ -1411,6 +1536,9 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: maxLength(string $check, integer $max)
 
+    データの長さが指定された最大値を超えていないかどうかをチェックします。
+
+..
     This rule ensures that the data stays within a maximum length
     requirement.
 
@@ -1424,6 +1552,11 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
             )
         );
 
+    データの長さは"データを文字列として表した時のバイト数"で計算されます。\
+    ASCII以外の文字を扱っている場合、文字数よりもバイト数が大きくなることがあるので\
+    注意してください。
+
+..
     The length here is "the number of bytes in the string
     representation of the data". Be careful that it may be larger than
     the number of characters when handling non-ASCII characters.
@@ -1432,6 +1565,9 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
     .. versionadded:: 2.2
 
+    mimeTypeが有効かどうかをチェックします。
+
+..
     This rule checks for valid mimeType
 
     ::
@@ -1446,6 +1582,9 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: minLength(string $check, integer $min)
 
+    データの長さが指定された最小値より大きいかどうかをチェックします。
+
+..
     This rule ensures that the data meets a minimum length
     requirement.
 
@@ -1459,6 +1598,11 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
             )
         );
 
+    データの長さは"データを文字列として表した時のバイト数"で計算されます。\
+    ASCII以外の文字を扱っている場合、文字数よりもバイト数が大きくなることがあるので\
+    注意してください。
+
+..
     The length here is "the number of bytes in the string
     representation of the data". Be careful that it may be larger than
     the number of characters when handling non-ASCII characters.
@@ -1466,9 +1610,15 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: money(string $check, string $symbolPosition = 'left')
 
+    データが有効な通貨かどうかをチェックします。
+
+..
     This rule will ensure that the value is in a valid monetary
     amount.
 
+    パラメータとしてシンボルの位置を指定できます(leftまたはright)。
+
+..
     Second parameter defines where symbol is located (left/right).
 
     ::
@@ -1483,6 +1633,10 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: multiple(mixed $check, mixed $options = array())
 
+    これは複数選択可能なセレクトボックスをバリデーションする時に使います。\
+    パラメータとして "in", "max", "min" をサポートしています。
+
+..
     Use this for validating a multiple select input. It supports
     parameters "in", "max" and "min".
 
@@ -1503,7 +1657,12 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: notEmpty(mixed $check)
 
+    データが空でないかどうかをチェックします。
+
+..
     The basic rule to ensure that a field is not empty.::
+
+::
 
         <?php
         public $validate = array(
@@ -1513,13 +1672,22 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
             )
         );
 
+    このバリデーションは複数選択可能なセレクトボックスで使うとエラーが\
+    起こりますので、代わりに"multiple"を使ってください。
+
+..
     Do not use this for a multiple select input as it will cause an
     error. Instead, use "multiple".
 
 
 .. php:staticmethod:: numeric(string $check)
 
+    データが有効な数値かどうかをチェックします。
+
+..
     Checks if the data passed is a valid number.::
+
+::
 
         <?php
         public $validate = array(
@@ -1533,6 +1701,10 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
     .. versionadded:: 2.2
 
+    データが有効な自然数かどうかをチェックします。\
+    ``$allowZero`` をtrueにすると、ゼロも正しい値としてチェックされます。
+
+..
     This rule checks if the data passed is a valid natural number.
     If ``$allowZero`` is set to true, zero is also accepted as a value.
 
@@ -1553,6 +1725,11 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: phone(mixed $check, string $regex = null, string $country = 'all')
 
+    データが有効なアメリカの電話番号かどうかをチェックします。\
+    アメリカ以外の電話番号をチェックしたい場合は、2つ目のパラメータに\
+    正規表現を指定します。
+
+..
     Phone validates US phone numbers. If you want to validate non-US
     phone numbers, you can provide a regular expression as the second
     parameter to cover additional number formats.
@@ -1569,6 +1746,10 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: postal(mixed $check, string $regex = null, string $country = 'us')
 
+    アメリカ、カナダ、イギリス、イタリア、ドイツ、ベルギーで有効な郵便番号かどうかをチェックします。\
+    他の国の郵便番号をチェックしたい場合は、2つ目のパラメータの正規表現に指定してください。
+
+..
     Postal is used to validate ZIP codes from the U.S. (us), Canada
     (ca), U.K (uk), Italy (it), Germany (de) and Belgium (be). For
     other ZIP code formats, you may provide a regular expression as the
@@ -1586,6 +1767,11 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: range(string $check, integer $lower = null, integer $upper = null)
 
+    データが指定された範囲内にあるかどうかをチェックします。\
+    範囲が指定されていなければ、現在のプラットフォームで有効な下限・上限で\
+    チェックされます。
+
+..
     This rule ensures that the value is in a given range. If no range
     is supplied, the rule will check to ensure the value is a legal
     finite on the current platform.
@@ -1600,16 +1786,26 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
             )
         );
 
+    上記のサンプルは0より大きくて(0.01など)10より小さい値(9.99など)であればすべて受け付けます。
+
+..
     The above example will accept any value which is larger than 0
     (e.g., 0.01) and less than 10 (e.g., 9.99).
 
     .. note::
 
+        lower及びupperの値は、その値自体は範囲に含まれません。
+
+..
         The range lower/upper are not inclusive
 
 
 .. php:staticmethod:: ssn(mixed $check, string $regex = null, string $country = null)
 
+    アメリカ、デンマーク、オランダの有効な社会保障番号かどうかをチェックします。\
+    他の国の番号をチェックしたい場合は、正規表現を指定してチェックできます。
+
+..
     Ssn validates social security numbers from the U.S. (us), Denmark
     (dk), and the Netherlands (nl). For other social security number
     formats, you may provide a regular expression.
@@ -1626,6 +1822,9 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: time(string $check)
 
+    データが時刻の形式かどうかをチェックします。
+
+..
     Time validation, determines if the string passed is a valid time. Validates
     time as 24hr (HH:MM) or am/pm ([H]H:MM[a|p]m) Does not allow/validate
     seconds.
@@ -1634,6 +1833,9 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
     .. versionadded:: 2.2
 
+    ファイルアップロードでエラーが発生したかどうかをチェックします。
+
+..
     This rule checks if a file upload has an error.
 
     ::
@@ -1648,8 +1850,14 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: url(string $check, boolean $strict = false)
 
+    データが有効なURLの形式かどうかをチェックします。\
+    サポートしているプロトコルとして http(s), ftp(s), file, news, gopher があります。
+
+..
     This rule checks for valid URL formats. Supports http(s), ftp(s),
     file, news, and gopher protocols::
+
+::
 
         <?php
         public $validate = array(
@@ -1658,8 +1866,13 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
             )
         );
 
+    プロトコルがURL中にあるかどうかをチェックするには以下のようにしてください。
+
+..
     To ensure that a protocol is in the url, strict mode can be enabled
     like so::
+
+::
 
         <?php
         public $validate = array(
@@ -1671,20 +1884,30 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 
 .. php:staticmethod:: userDefined(mixed $check, object $object, string $method, array $args = null)
 
+    ユーザー定義にバリデーションを実行します。
+
+..
     Runs an user-defined validation.
 
 
 .. php:staticmethod:: uuid(string $check)
 
+    データがuuid形式かどうかをチェックします。\
+    http://tools.ietf.org/html/rfc4122
+
+..
     Checks that a value is a valid uuid: http://tools.ietf.org/html/rfc4122
 
 
-Localized Validation
-====================
+ローカライズバリデーション
+==========================
 
-The validation rules phone() and postal() will pass off any country prefix
-they do not know how to handle to another class with the appropriate name. For
-example if you lived in the Netherlands you would create a class like::
+phone()またはpostal()といったバリデーションルールは
+
+..
+  The validation rules phone() and postal() will pass off any country prefix
+  they do not know how to handle to another class with the appropriate name. For
+  example if you lived in the Netherlands you would create a class like::
 
     <?php
     class NlValidation {

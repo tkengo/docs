@@ -17,10 +17,9 @@
   ensure that usernames are unique. Defining validation rules makes
   form handling much, much easier.
 
-データバリデーションには、いろいろなやり方があります。\
-この章では、モデルを使ったバリデーションについて、\
-モデルのsave()メソッドを呼び出した時に何が起こっているのか、\
-ということを解説します。\
+データバリデーションにはいろいろな方法があります。\
+この章ではモデルを使ったバリデーションについて、\
+モデルのsave()メソッドを呼び出した時に何が起こっているのかを解説します。\
 バリデーションエラーの表示方法については、こちらを参考にしてください。\
 :doc:`/core-libraries/helpers/form`.
 
@@ -32,7 +31,7 @@
   validation errors, check out
   :doc:`/core-libraries/helpers/form`.
 
-データバリデーションをするには、まず初めにModel::validate配列に\
+データバリデーションをするには、Model::validate配列に\
 バリデーションルールを定義します。\
 
 ..
@@ -137,7 +136,8 @@ CakePHPにはたくさんのビルトインのバリデーションルールが�
     }
 
 loginフィールドに2つのバリデーションルールが定義されています。\
-これは、アルファベットと数字のみであることに加えて、5以上〜15以内でなければなりません。\
+これは、アルファベットと数字のみであることに加えて、\
+5文字以上〜15文字以内でなければなりません。\
 passwordフィールドは最低8文字が必要です。\
 emailフィールドは同じくメールアドレス形式であること、\
 それからbornフィールドも同じく日付形式であること、というルールになっています。\
@@ -198,7 +198,7 @@ emailフィールドは同じくメールアドレス形式であること、\
   for, and ‘ruleName’ is a pre-defined rule name, such as
   'alphaNumeric', 'email' or 'isUnique'.
 
-ユーザーが正しい形式のメールアドレスをもっている必要があるなら、\
+ユーザーが正しい形式のメールアドレスかどうかをチェックしたければ\
 以下のようにルールを定義します。
 
 ..
@@ -228,10 +228,10 @@ emailフィールドは同じくメールアドレス形式であること、\
     <?php
     public $validate = array(
         'fieldName1' => array(
-            'rule'       => 'ruleName', // or: array('ruleName', 'param1', 'param2' ...)
+            'rule'       => 'ruleName', // または array('ruleName', 'param1', 'param2' ...)
             'required'   => true,
             'allowEmpty' => false,
-            'on'         => 'create', // or: 'update'
+            'on'         => 'create', // または 'update'
             'message'    => 'Your Error Message'
         )
     );
@@ -245,7 +245,7 @@ emailフィールドは同じくメールアドレス形式であること、\
   form validation will not function correctly. This is because
   'required' is not actually a rule.
 
-これを見てわかるように、各フィールドは(フィールドが1つしかない場合でも)\
+これを見てわかるように、フィールドには(フィールドが1つしかない場合でも)\
 'rule', 'required', 'allowEmpty', 'on', 'message'という5つのキーを含む配列が\
 指定されています。\
 これらのキーの詳細をみていきましょう。
@@ -362,7 +362,7 @@ requiredキーのデフォルト値はfalseです。
   empty ('').
 
 .. versionchanged:: 2.1
-    ``created`` と ``update`` のサポートが追加されました。
+    ``create`` と ``update`` のサポートが追加されました。
 
 ..
   .. versionchanged:: 2.1
@@ -449,8 +449,8 @@ message
 =====================
 
 これは前に説明した単純なルールの割り当てよりも、より柔軟にルールを設定できます。\
-より細かくデータバリデーションを定義するために追加のステップが必要です。\
-1つのフィールドに複数のバリデーションルールを割り当てる方法を説明しています。
+より細かくデータバリデーションを定義するために追加のステップが必要ですので、\
+1つのフィールドに複数のバリデーションルールを割り当てる方法を説明します。
 
 ..
   The technique outlined above gives us much more flexibility than
@@ -473,11 +473,11 @@ message
         'fieldName' => array(
             'ruleName' => array(
                 'rule' => 'ruleName',
-                // extra keys like on, required, etc. go here...
+                // onやrequiredなどの追加のキーをここに追加
             ),
             'ruleName2' => array(
                 'rule' => 'ruleName2',
-                // extra keys like on, required, etc. go here...
+                // onやrequiredなどの追加のキーをここに追加
             )
         )
     );
@@ -683,15 +683,15 @@ last
     }
 
 メソッドの第一引数にはフィールド名をキーとして\
-POSTされたデータを値とする連想配列として渡されます。
+POSTされたデータを値とする連想配列が渡されます。
 
 ..
   The current field to be validated is passed into the function as
   first parameter as an associated array with field name as key and
   posted data as value.
 
-'rule'を配列にして追加したパラメータを指定すれば、それをバリデーションメソッドに\
-渡すことができて(``$check`` パラメータの後の引数で受け取ります)、\
+'rule'を配列にして追加パラメータを指定すれば、それはバリデーションメソッドに\
+渡されて(``$check`` パラメータの後の引数で受け取ります)、\
 メソッドの中で参照することができます。
 
 ..
@@ -722,8 +722,9 @@ POSTされたデータを値とする連想配列として渡されます。
 
 複数フィールドで使われるバリデーションルールでは、$checkから\
 フィールドの値を取り出して下さい。\
-$checkにはフォームのフィールド名がキーで、フォームの入力値の値となる\
-配列が渡されます。それ以外のフォームデータは$this->dataに入っています。
+$checkにはフォームのフィールド名がキーで、フォームの入力値が値となる\
+配列が渡されます。バリデーション対象以外のフォームデータは\
+$this->dataに入っています。
 
 ..
   When writing a validation rule which can be used by multiple
@@ -762,10 +763,11 @@ $checkにはフォームのフィールド名がキーで、フォームの入�
     Your own validation methods must have ``public`` visibility. Validation
     methods that are ``protected`` and ``private`` are not supported.
 
-バリデーションに成功すれば ``true`` を、バリデーションに失敗すれば ``false`` を返します。\
+バリデーションに成功すれば ``true`` を、バリデーションに失敗すれば\
+``false`` を返すようにします。\
 また、エラーメッセージとして文字列を返すこともできます。\
 文字列を返した場合はバリデーションは失敗したとみなされます。\
-$validat配列で設定したmessageキーはここで返した文字列で上書きされ、\
+$validate配列で設定したmessageキーはここで返した文字列で上書きされ、\
 フォームのエラーメッセージとして表示されます。
 
 ..
@@ -789,7 +791,7 @@ $validat配列で設定したmessageキーはここで返した文字列で上�
 
 すべてのバリデーションルールは ``ModelValidator`` オブジェクトの中にあり、\
 モデルでは各フィールドのルールセットを保持しています。\
-バリデーションルールを動的に操作したい場合、新しいバリデーションメソッドを
+バリデーションルールを動的に操作したい場合、新しいバリデーションメソッドを\
 このオブジェクトに対して追加することで新しいバリデーションルールを追加できます。
 
 ..
@@ -830,7 +832,7 @@ $validat配列で設定したmessageキーはここで返した文字列で上�
 ::
 
     <?php
-    // Inside a model class
+    // モデルクラスの中
     $this->validator()
         ->add('password', 'required', array(
             'rule' => 'notEmpty',
@@ -903,7 +905,7 @@ addメソッドを使う代わりに、validatorオブジェクトに直接配�
         'required' => true
     ));
 
-似たようなメソッドでフィールドのルールを置き換えることもできます。
+ルールを全部置き換えることもできます。
 
 ..
   You can also completely replace all the rules for a field using a similar
@@ -912,7 +914,7 @@ addメソッドを使う代わりに、validatorオブジェクトに直接配�
 ::
 
     <?php
-    // In a model class
+    // モデルクラスの中
     $this->validator()->getField('password')->setRules(array(
         'required' => array(...),
         'otherRule' => array(...)
@@ -1902,12 +1904,16 @@ CakePHPのValidationクラスには、よく使われるたくさんのバリデ
 ローカライズバリデーション
 ==========================
 
-phone()またはpostal()といったバリデーションルールは
+phone()またはpostal()といったバリデーションルールは、バリデーション対象の国の\
+フォーマットがわからない場合は適切な名前のクラスに処理を渡されます。\
+たとえばオランダのバリデーションの場合は以下のようなクラスを作ってください。
 
 ..
   The validation rules phone() and postal() will pass off any country prefix
   they do not know how to handle to another class with the appropriate name. For
   example if you lived in the Netherlands you would create a class like::
+
+::
 
     <?php
     class NlValidation {
@@ -1919,10 +1925,17 @@ phone()またはpostal()といったバリデーションルールは
         }
     }
 
-This file could be placed in ``APP/Validation/`` or
-``App/PluginName/Validation/``, but must be imported via App::uses() before
-attempting to use it. In your model validation you could use your NlValidation
-class by doing the following::
+このファイルは ``App/Validation/`` または ``App/PluginName/Validation/`` 以下に\
+配置します。使う前には App::uses() を使って読み込んでおいてください。\
+モデルのバリデーションで以下のように設定すしてNlValidationを使えます。
+
+..
+  This file could be placed in ``APP/Validation/`` or
+  ``App/PluginName/Validation/``, but must be imported via App::uses() before
+  attempting to use it. In your model validation you could use your NlValidation
+  class by doing the following::
+
+::
 
     <?php
     public $validate = array(
@@ -1930,13 +1943,19 @@ class by doing the following::
         'postal_code' => array('rule' => array('postal', null, 'nl')),
     );
 
-When your model data is validated, Validation will see that it cannot handle
-the ``nl`` locale and will attempt to delegate out to
-``NlValidation::postal()`` and the return of that method will be used as the
-pass/fail for the validation. This approach allows you to create classes that
-handle a subset or group of locales, something that a large switch would not
-have. The usage of the individual validation methods has not changed, the
-ability to pass off to another validator has been added.
+モデルのデータが検証される時に、Validationオブジェクトは\
+``nl`` という国は判別できないので ``NlValidation::postal()`` に処理を渡します。\
+そしてその関数の戻り値が検証に使われます。\
+これは国別のバリデーションをやってくれるクラスを作って
+
+..
+  When your model data is validated, Validation will see that it cannot handle
+  the ``nl`` locale and will attempt to delegate out to
+  ``NlValidation::postal()`` and the return of that method will be used as the
+  pass/fail for the validation. This approach allows you to create classes that
+  handle a subset or group of locales, something that a large switch would not
+  have. The usage of the individual validation methods has not changed, the
+  ability to pass off to another validator has been added.
 
 .. tip::
 
